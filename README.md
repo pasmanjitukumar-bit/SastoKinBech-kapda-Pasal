@@ -49,11 +49,11 @@ Retry limits: Google Sheets is not a transactional database. The in-process lock
 
 Run `npm test` and `npm run build`. Tests verify validation, authoritative prices, write-before-email sequencing, retry behavior, partial failure recovery and reference conflicts using fake services. They do not verify real credentials.
 
-For an end-to-end live test: configure credentials, turn demo mode off, restart, place a single quantity-1 order using an email address you control, check the A:P row, verify both Gmail and customer inboxes/spam folders, and verify thank-you totals. Retry the same completed request to confirm no new row or emails. To test failures, use invalid credentials: checkout must display an error and remain on the form. Restore credentials afterward. Do not use other people's contact information for testing.
+For an end-to-end live test: configure credentials, turn demo mode off, restart, place a single quantity-1 order using an email address you control, check the A:S row, verify both Gmail and customer inboxes/spam folders, and verify thank-you totals. Retry the same completed request to confirm no new row or emails. To test failures, use invalid credentials: checkout must display an error and remain on the form. Restore credentials afterward. Do not use other people's contact information for testing.
 
 ## Vercel later
 
-Push this directory to a private repository and import it into Vercel with the Next.js preset. If this project sits in a larger repository, choose `sasto-funnel` as Root Directory. Add all `.env.example` variables in project settings, using the real domain for `NEXT_PUBLIC_SITE_URL` and `FRONTEND_URL`; set `DEMO_MODE=false`. Store the private key as multiline text or escaped `\n`. Build with `npm run build`; deploy. The API uses Node.js runtime and a 60-second maximum duration, subject to your Vercel plan. Use HTTPS, replace sample testimonials, confirm product availability and policy copy, and repeat the live end-to-end order test before sharing the site.
+Import the GitHub repository `pasmanjitukumar-bit/SastoKinBech-kapda-Pasal` into Vercel with the Next.js preset. This repository root is the project root (`.`). Add `.env.example` values in Vercel Project Settings → Environment Variables. Replace both example domain values with the assigned HTTPS production domain, supply newly rotated Google and Gmail credentials, set `SMTP_PORT=587`, and set `DEMO_MODE=false`. Store the private key as a multiline value or escaped `\n`. Build with `npm run build`; deploy. The API uses Node.js runtime and a 60-second maximum duration, subject to your Vercel plan. Use HTTPS, replace sample testimonials, confirm product availability and policy copy, and repeat the live end-to-end order test before sharing the site.
 
 References: https://nextjs.org/docs/app/getting-started/route-handlers and https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append
 
@@ -61,13 +61,13 @@ References: https://nextjs.org/docs/app/getting-started/route-handlers and https
 
 The local environment now uses the supplied service account and Gmail app password, stored only in ignored `.env.local`. Demo mode is off. Gmail uses port 587 with required STARTTLS. Business notifications go to `pasmanjitukumar@gmail.com`; customer confirmations go to the checkout email address. Connection-test emails are labeled and are not orders.
 
-The authorized order destination is a dedicated `SastoKinBech Orders` tab inside the supplied spreadsheet. Run `node scripts/setup-orders-sheet.mjs` after the service account has Editor access. It creates or formats only that tab and validates existing headers before changing them. Other tabs remain unchanged. The setup includes a plum header, white/blush alternating rows, frozen header and order ID column, filters, status dropdowns with conditional colors, NPR currency formats, Nepal-local sortable dates, and hidden technical retry columns.
+The order destination is a dedicated `SastoKinBech Orders` tab inside the supplied spreadsheet. That tab has a dark green title/header, dark green order rows, colored status cells, a filter, frozen identification columns, NPR currency formats, Nepal-local sortable dates, and hidden technical retry columns. The setup script formats only this orders tab.
 
-The updated A:S schema appends `Delivery Fee`, `Delivery Area`, and `Color / Size Preferences` to the original A:P columns. The blank Notes column remains available for staff. Date & Time is now a numeric Sheets serial in Nepal local time, displayed as `dd mmm yyyy, hh:mm`.
+The A:S schema places delivery details beside the item price; technical retry columns are hidden. The blank Notes column remains available for staff. Date & Time is now a numeric Sheets serial in Nepal local time, displayed as `dd mmm yyyy, hh:mm`.
 
-Safe connection diagnostics: `node scripts/check-sheet-permissions.mjs` reports Google's `canEdit` flag. `node preflight.mjs` checks Sheets reading and Gmail login without sending emails. `node scripts/test-email-connection.mjs` sends two clearly labeled connection-test emails to the business address; run only when deliberately testing email delivery. On this Windows host, start Node with trusted system CAs if needed: `$env:NODE_USE_SYSTEM_CA='1'` before running the scripts or dev server. Certificate checking remains enabled.
+On this Windows host, Node may need trusted system certificates enabled for Google and Gmail requests: set `NODE_USE_SYSTEM_CA=1` before starting the app. Certificate checks remain enabled.
 
-The service account must have Editor access on the exact spreadsheet ID. A successful read or public link does not prove write access. Until setup succeeds, API submission must return an error rather than claim a completed order.
+The service account has Editor access to the configured spreadsheet. A successful order submission writes the order row and completes both emails.
  
 ## Live setup verified
 
