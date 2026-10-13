@@ -1,0 +1,1 @@
+import {Suspense} from 'react';import Checkout from './form';export default function Page(){return <Suspense fallback={<main className="section">Loading checkout…</main>}><Checkout/></Suspense>}
