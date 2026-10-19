@@ -1,6 +1,6 @@
 # SastoKinBech — Cash On Delivery funnel
 
-Next.js App Router + Tailwind CSS. Local development only; nothing has been published.
+Next.js App Router + Tailwind CSS for the SastoKinBech cash-on-delivery store. Production hosting uses Vercel; local development uses port 3016.
 
 ## Run locally
 
@@ -18,20 +18,15 @@ Edit `lib/catalog.mjs` for product names, prices, images and FAQs. The three pri
 
 ## Google Sheets setup
 
-1. Create a Google Spreadsheet. Name its tab `Orders` (or set `GOOGLE_SHEET_TAB_NAME` to the exact tab name).
-2. Paste this tab-separated header into cell A1:
+The configured spreadsheet has a branded title and subtitle above its order table. The `oder` tab's header is on row 5 and orders begin on row 6. Keep the following columns in this order; the technical fingerprint column is hidden after S:
 
 ```text
-Order ID	Date & Time	Customer Name	Phone Number	Email Address	Exact Location	Product Name	Quantity	Price Per Piece	Total Price	Payment Method	Order Status	Notes	Request Fingerprint	Business Email Sent	Customer Email Sent
+Order ID	Date & Time (Nepal)	Customer Name	Phone Number	Email Address	Exact Location	Product Name / Options	Quantity	Price Per Piece (NPR)	Total Price (NPR)	Payment Method	Order Status	Notes	Subtotal (NPR)	Delivery (NPR)	Delivery Area	Business Email	Customer Email	Request Fingerprint
 ```
 
-The first 13 columns are your requested order fields. The final three track retries; keep them in place. You may hide columns N:P. Do not sort individual columns independently. For reliable row markers, avoid sorting or deleting order rows while submissions are running; use filter views instead.
+Set `GOOGLE_SHEET_ID`, `GOOGLE_SHEET_TAB_NAME`, and `GOOGLE_SERVICE_ACCOUNT_EMAIL`. The service account must have Editor access. Keep row 5 as the table header and do not move the columns. Existing title and subtitle rows may stay above it. Do not sort individual columns independently; use the table filter.
 
-3. Freeze row 1. Make it bold, white text on dark green, add alternating row colors, format H:J as numbers, and use Data → Create a filter. Format column B as plain text (it stores ISO UTC timestamps).
-4. Select L2:L, then Data → Data validation → Dropdown. Add `New Order`, `Order Confirmed`, `Order Ongoing`, `Delivered`, `Cancelled`; assign colors. Select reject invalid input.
-5. The Sheet ID is the segment between `/d/` and `/edit` in its URL.
-6. In Google Cloud Console, create a project, enable Google Sheets API, create a service account, and create a JSON key. Copy its `client_email` to `GOOGLE_SERVICE_ACCOUNT_EMAIL`, and `private_key` to `GOOGLE_PRIVATE_KEY` in `.env.local`. Store a quoted private key with literal `\n` escapes; the backend converts them to real newlines. Never commit the JSON key or environment files.
-7. Share your spreadsheet with the service account email as Editor. Set `GOOGLE_SHEET_ID` and the exact `GOOGLE_SHEET_TAB_NAME`. No API key or public sharing is needed.
+For a new spreadsheet, enable Google Sheets API, create a service account and key, and share the sheet with the service account as Editor. Store the private key only in `.env.local` or Vercel Secret variables, using literal `\\n` escapes if needed. Never commit key files or environment files.
 
 ## Gmail SMTP setup
 
@@ -57,18 +52,6 @@ Import the GitHub repository `pasmanjitukumar-bit/SastoKinBech-kapda-Pasal` into
 
 References: https://nextjs.org/docs/app/getting-started/route-handlers and https://developers.google.com/workspace/sheets/api/reference/rest/v4/spreadsheets.values/append
 
-## Current connection setup
+## Current deployment status
 
-The local environment now uses the supplied service account and Gmail app password, stored only in ignored `.env.local`. Demo mode is off. Gmail uses port 587 with required STARTTLS. Business notifications go to `pasmanjitukumar@gmail.com`; customer confirmations go to the checkout email address. Connection-test emails are labeled and are not orders.
-
-The order destination is a dedicated `SastoKinBech Orders` tab inside the supplied spreadsheet. That tab has a dark green title/header, dark green order rows, colored status cells, a filter, frozen identification columns, NPR currency formats, Nepal-local sortable dates, and hidden technical retry columns. The setup script formats only this orders tab.
-
-The A:S schema places delivery details beside the item price; technical retry columns are hidden. The blank Notes column remains available for staff. Date & Time is now a numeric Sheets serial in Nepal local time, displayed as `dd mmm yyyy, hh:mm`.
-
-On this Windows host, Node may need trusted system certificates enabled for Google and Gmail requests: set `NODE_USE_SYSTEM_CA=1` before starting the app. Certificate checks remain enabled.
-
-The service account has Editor access to the configured spreadsheet. A successful order submission writes the order row and completes both emails.
- 
-## Live setup verified
-
-The current local configuration uses the supplied SastoKinBech spreadsheet and its dedicated SastoKinBech Orders tab. The service account has Editor access. The order flow was run successfully: a labeled integration test row was written, both email delivery steps were recorded as sent, and the test row was marked Cancelled with a do-not-fulfil note. Both test messages went to the supplied business inbox. Rotate the credentials shared in chat before deployment.
+The deployed checkout requires all ten order service variables in the target Vercel environment. The Sheet ID, tab name and service account email are configured for Production and Preview. Add a newly rotated `GOOGLE_PRIVATE_KEY` as a Secret in Production and change `SMTP_PASS` to a newly rotated Gmail App Password saved as a Secret. Never reuse credentials pasted into chat. After saving, redeploy and verify with an order using an email address you control. Unit tests do not validate live Sheets access or email delivery.
