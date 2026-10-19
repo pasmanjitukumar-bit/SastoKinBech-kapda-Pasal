@@ -16,6 +16,10 @@ Open http://localhost:3016. To preview the full checkout without credentials, se
 
 Edit `lib/catalog.mjs` for product names, prices, images and FAQs. The three price pairs were interpreted as Floral Rs. 2,999 → 1,999; Golden Rs. 3,999 → 2,999; Classic Rs. 2,499 → 1,499. Confirm these assignments before publishing. Only sarees are shown because those are the supplied photographs; add genuine men's and kids' products and photographs to expand the collection. All seven images are converted to lossless PNG, preserving native resolution; the smaller supplied images cannot gain real detail through enlargement. Gallery descriptions are editorial names, not verified fabric specifications. Reviews are explicitly marked fictional samples; replace them with real customer reviews before launch. No reels section exists because no links were provided.
 
+## Seller applications
+
+The “Sell with us” page at `/sell` lets a shop submit its contact details and a first product listing. Applications are validated and emailed to `BUSINESS_EMAIL`; the applicant receives an acknowledgement. The shop owner reviews the application and adds approved inventory to `lib/catalog.mjs` and `public/products/` before it appears in the public store. Applications require the same Google and SMTP environment variables as order processing. This is an application and review workflow, not seller accounts or automatic product publishing.
+
 ## Google Sheets setup
 
 The configured spreadsheet has a branded title and subtitle above its order table. The `oder` tab's header is on row 5 and orders begin on row 6. Keep the following columns in this order; the technical fingerprint column is hidden after S:
