@@ -1,4 +1,4 @@
-import { checkConfig, integrations } from '../../../lib/integrations.mjs';
+import { checkEmailConfig, integrations } from '../../../lib/integrations.mjs';
 import { SellerApplicationError, validateSellerApplication } from '../../../lib/seller.mjs';
 
 export const runtime = 'nodejs';
@@ -33,14 +33,14 @@ export async function POST(request) {
     if (raw.length > 8192) throw new SellerApplicationError('The application is too large.', 413);
     const form = new URLSearchParams(raw);
     const application = validateSellerApplication(Object.fromEntries(form));
-    checkConfig();
+    checkEmailConfig();
     const { mailer } = integrations();
     await mailer.sellerApplication(application);
     return new Response(null, { status: 303, headers: { Location: '/sell/thanks' } });
   } catch (error) {
     const known = error instanceof SellerApplicationError;
     console.error('Seller application failed:', known ? error.message : error.name);
-    const message = known ? error.message : error.message.startsWith('Order service')
+    const message = known ? error.message : error.message.startsWith('Email service')
       ? 'Seller applications are not configured yet. Please email pasmanjitukumar@gmail.com.'
       : 'We could not send your application. Please email pasmanjitukumar@gmail.com.';
     return new Response(null, { status: 303, headers: { Location: `/sell?error=${encodeURIComponent(message)}` } });

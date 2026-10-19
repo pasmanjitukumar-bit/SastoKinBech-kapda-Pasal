@@ -18,7 +18,7 @@ Edit `lib/catalog.mjs` for product names, prices, images and FAQs. The three pri
 
 ## Seller applications
 
-The “Sell with us” page at `/sell` lets a shop submit its contact details and a first product listing. Applications are validated and emailed to `BUSINESS_EMAIL`; the applicant receives an acknowledgement. The shop owner reviews the application and adds approved inventory to `lib/catalog.mjs` and `public/products/` before it appears in the public store. Applications require the same Google and SMTP environment variables as order processing. This is an application and review workflow, not seller accounts or automatic product publishing.
+The “Sell with us” page at `/sell` lets a shop submit its contact details and a first product listing. Applications are validated and emailed to `BUSINESS_EMAIL`; the applicant receives an acknowledgement. The shop owner reviews the application and adds approved inventory to `lib/catalog.mjs` and `public/products/` before it appears in the public store. Applications need the SMTP email variables (`BUSINESS_EMAIL`, `EMAIL_FROM`, `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, and `SMTP_PASS`); Google Sheets access is not required for seller applications. This is an application and review workflow, not seller accounts or automatic product publishing.
 
 ## Google Sheets setup
 
